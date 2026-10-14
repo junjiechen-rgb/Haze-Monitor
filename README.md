@@ -23,14 +23,28 @@ Static page, no build step. Needs an HTTP server because it uses ES modules:
 
 Auto-refreshes every 10 minutes. To host it, enable GitHub Pages with source "GitHub Actions"; `.github/workflows/pages.yml` deploys on push to `main`.
 
-## Lark phone alerts
-A scheduled GitHub Action (`.github/workflows/haze-alert.yml`, hourly at :10) runs `scripts/check.mjs` and posts a card to a Lark custom bot.
+## Alerts to Lark and email
+A scheduled GitHub Action (`.github/workflows/haze-alert.yml`, hourly at :10) runs `scripts/check.mjs` and sends the alert to **every** configured recipient. Recipients are kept in repo secrets (Settings → Secrets and variables → Actions → New repository secret), so webhook URLs and addresses never appear in the code.
 
-1. In the Lark group you read on your phone: Settings → Bots → Add bot → Custom Bot. Copy the webhook URL. If you enable "signature verification", copy the secret too.
-2. Repo → Settings → Secrets and variables → Actions: add secret `LARK_WEBHOOK_URL` (and `LARK_SIGN_SECRET` if used). Add a repository **variable** (not secret) `HAZE_POSTAL` with your postal code, so it never appears in the code.
-3. Actions → "Haze alert (Lark)" → Run workflow with *test* ticked to confirm delivery.
+| Secret | What to put in it |
+|---|---|
+| `HAZE_POSTAL` | Your postal code (required) |
+| `LARK_WEBHOOK_URLS` | One Lark custom-bot webhook URL per line. For a bot with signature verification, write `url|signing-secret` on that line. |
+| `ALERT_EMAILS` | One email address per line |
+| `GMAIL_USER` | The Gmail address that sends the alerts |
+| `GMAIL_APP_PASSWORD` | A Gmail app password for that account (not your normal password) |
 
-You get a message when the level changes (including back to Good), on the first run if air is already Moderate or worse, and a daily summary on the first run after 07:00 SGT. The last level is kept in the Actions cache. Local test: `LARK_WEBHOOK_URL=... node scripts/check.mjs --test`, or `npm run check` to print the card without sending.
+The older single-bot secrets `LARK_WEBHOOK_URL` / `LARK_SIGN_SECRET` still work.
+
+**Lark webhook:** in the Lark group (desktop app) → Settings → Bots → Add bot → Custom Bot → copy the webhook URL. Each person can create a bot in their own group and give you the URL.
+
+**Gmail app password:** the sending Google account needs 2-Step Verification on. Go to https://myaccount.google.com/apppasswords, create one (name it "Haze Monitor"), and paste the 16-character code into `GMAIL_APP_PASSWORD`. Gmail allows about 500 emails a day, far more than this needs.
+
+**Adding or removing someone:** edit `LARK_WEBHOOK_URLS` or `ALERT_EMAILS` (secrets can't be viewed after saving, so paste the full list again). Each recipient gets their own message; one bad address doesn't stop the others, but the run is marked failed so you notice.
+
+**Test:** Actions → "Haze alert (Lark + email)" → Run workflow with *test* ticked. The log shows `sent` / `FAILED` per recipient (URLs and addresses are masked).
+
+You get a message when the NEA band changes (including back to Normal), on the first run if air is already Elevated or worse, and a daily summary on the first run after 07:00 SGT. Messages include the best outdoor window and a link to the dashboard (override with the `DASHBOARD_URL` variable). Local dry run: `npm ci && HAZE_POSTAL=XXXXXX npm run check`.
 
 ## Tests
     npm test
