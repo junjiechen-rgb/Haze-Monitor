@@ -1,0 +1,6 @@
+{
+  "name": "haze-monitor",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test", "check": "node scripts/check.mjs --dry", "serve": "python3 -m http.server 8080" }
+}

@@ -1,0 +1,39 @@
+name: Haze alert (Lark)
+on:
+  schedule:
+    - cron: '10 * * * *' # hourly, after NEA's hourly update
+  workflow_dispatch:
+    inputs:
+      test:
+        description: Send a test card to Lark now
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency: haze-alert
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Restore last-alert state
+        uses: actions/cache/restore@v4
+        with:
+          path: .state
+          key: haze-state-never-matches
+          restore-keys: haze-state-
+      - run: node --test
+      - name: Check air quality and notify
+        env:
+          LARK_WEBHOOK_URL: ${{ secrets.LARK_WEBHOOK_URL }}
+          LARK_SIGN_SECRET: ${{ secrets.LARK_SIGN_SECRET }}
+          HAZE_POSTAL: ${{ secrets.HAZE_POSTAL || vars.HAZE_POSTAL }}
+        run: node scripts/check.mjs ${{ inputs.test && '--test' || '' }}
+      - name: Save state
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .state
+          key: haze-state-${{ github.run_id }}

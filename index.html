@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Haze Monitor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Haze Monitor</h1>
+      <p id="where" class="muted">Locating…</p>
+    </header>
+
+    <section id="verdict" class="verdict" aria-live="polite">
+      <div id="verdict-label">Loading…</div>
+      <div id="verdict-note" class="small"></div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>PM2.5 <span class="muted">1-hour</span></h2>
+        <div class="big"><span id="pm25">–</span> <small>µg/m³</small></div>
+        <div id="pm25-band" class="small"></div>
+        <div id="trend" class="small"></div>
+        <svg id="spark" viewBox="0 0 120 30" preserveAspectRatio="none" aria-label="PM2.5 today"></svg>
+      </article>
+      <article class="card">
+        <h2>PSI <span class="muted">24-hour</span></h2>
+        <div class="big"><span id="psi">–</span></div>
+        <div id="psi-band" class="small"></div>
+        <div id="psi-sub" class="small muted"></div>
+      </article>
+    </section>
+
+    <section class="grid advice">
+      <article class="card"><h2>Outdoor activity</h2><p id="adv-outdoor"></p></article>
+      <article class="card"><h2>Air purifier</h2><p id="adv-purifier"></p></article>
+      <article class="card"><h2>Air-con</h2><p id="adv-aircon"></p></article>
+    </section>
+
+    <footer class="small muted">
+      <p id="updated"></p>
+      <p id="disclaimer"></p>
+      <p>Data: NEA via <a href="https://data.gov.sg">data.gov.sg</a>; geocoding by OneMap. Change location with <code>?postal=XXXXXX</code>.</p>
+    </footer>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
