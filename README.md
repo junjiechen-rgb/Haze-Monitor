@@ -4,7 +4,8 @@ Tracks Singapore's PSI and real-time PM2.5 for the NEA reading point nearest you
 
 ## How it decides
 - **Nearest point:** the postal code is geocoded with OneMap, then the closest NEA region label point (west/east/central/south/north) is chosen by distance. NEA publishes PM2.5 and PSI per region.
-- **Advice is driven by 1-hour PM2.5** (NEA's guide for the next few hours): Normal ≤55, Elevated 56–150, High 151–250, Very High ≥251 µg/m³. The 24-hour PSI is shown as context; if it is Unhealthy+ and worse than the PM2.5 band, advice goes one step more cautious, unless PM2.5 is clearly falling. A rising/falling trend vs the previous hour is shown.
+- **Advice follows NEA's 1-hour PM2.5 guide exactly:** Band I Normal (0–55 µg/m³): continue normal activities. Band II Elevated (56–150): reduce prolonged or strenuous outdoor activity. Band III High (151–250): avoid prolonged or strenuous outdoor activity. Band IV Very high (≥251): minimise all outdoor activity for the next hour. Higher-risk groups (older adults, pregnant women, children, people with chronic lung or heart disease) take extra precautions from Elevated onwards. Air purifier and air-con advice use the same band.
+- The 24-hour PSI is shown as context only (with a note when it is Unhealthy or worse); it never changes the band. A rising/falling trend vs the previous hour is shown.
 - General guidance only, not medical advice.
 
 ## Hourly trend and best time to go outside

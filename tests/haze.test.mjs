@@ -37,14 +37,30 @@ test('trend', () => {
   assert.equal(trendOf([20, 22]), 'steady');
 });
 
-test('advice is driven by PM2.5; PSI bumps one level unless improving', () => {
+test('level follows the 1-hr PM2.5 band only; high PSI adds a note', () => {
   assert.equal(evaluate({ psi: 30, pm25: 10 }).level.id, 0);
   assert.equal(evaluate({ psi: 60, pm25: 100 }).level.id, 1);
-  assert.equal(evaluate({ psi: 150, pm25: 20, trend: 'steady' }).level.id, 1);
-  const improving = evaluate({ psi: 150, pm25: 20, trend: 'falling' });
-  assert.equal(improving.level.id, 0);
-  assert.ok(improving.note);
+  const psiHigh = evaluate({ psi: 150, pm25: 20, trend: 'steady' });
+  assert.equal(psiHigh.level.id, 0);
+  assert.match(psiHigh.note, /PSI is Unhealthy/);
+  assert.equal(evaluate({ psi: 30, pm25: 10 }).note, null);
   assert.match(buildAdvice(evaluate({ psi: 50, pm25: 200 })).aircon, /Close windows/);
+});
+
+test('NEA band boundaries and labels', () => {
+  const lvl = (v) => evaluate({ psi: 30, pm25: v }).level;
+  assert.deepEqual([55, 56, 150, 151, 250, 251].map((v) => lvl(v).id), [0, 1, 1, 2, 2, 3]);
+  assert.deepEqual([0, 1, 2, 3].map((i) => lvl([10, 100, 200, 300][i]).label), ['Normal', 'Elevated', 'High', 'Very High']);
+});
+
+test('outdoor advice starts with NEA action; higher-risk line from Elevated', () => {
+  const adv = (v) => buildAdvice(evaluate({ psi: 30, pm25: v }));
+  assert.match(adv(10).outdoor, /^Continue normal activities\./);
+  assert.match(adv(100).outdoor, /^Reduce prolonged or strenuous outdoor activity\./);
+  assert.match(adv(200).outdoor, /^Avoid prolonged or strenuous outdoor activity\./);
+  assert.match(adv(300).outdoor, /^Minimise all outdoor activity for the next hour\./);
+  assert.equal(adv(55).higherRisk, null);
+  for (const v of [56, 200, 300]) assert.match(adv(v).higherRisk, /pregnant women, children/);
 });
 
 test('buildReport picks nearest region and computes trend', () => {
@@ -71,6 +87,8 @@ test('Lark card has header colour and all three advice items', () => {
   const card = buildCard(r);
   assert.equal(card.msg_type, 'interactive');
   assert.equal(card.card.header.template, 'orange');
+  assert.match(card.card.header.title.content, /High \(Band III\)/);
+  assert.ok(JSON.stringify(card).includes('Higher-risk groups'));
   const text = JSON.stringify(card);
   for (const k of ['Outdoor', 'Air purifier', 'Air-con']) assert.ok(text.includes(k));
 });

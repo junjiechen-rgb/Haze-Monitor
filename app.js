@@ -1,7 +1,7 @@
 import { geocodePostal } from './lib/geo.js';
 import { loadHistory, loadReport } from './lib/data.js';
 import { renderHistory } from './history-view.js';
-import { DISCLAIMER } from './lib/advice.js';
+import { DISCLAIMER, LEVELS, NEA_ACTION } from './lib/advice.js';
 
 const REFRESH_MS = 10 * 60 * 1000;
 const $ = (id) => document.getElementById(id);
@@ -40,6 +40,20 @@ function askPostal() {
   };
 }
 
+function renderGuide(current) {
+  $('guide').tBodies[0].replaceChildren(
+    ...LEVELS.map((l) => {
+      const tr = document.createElement('tr');
+      if (l.id === current) {
+        tr.className = 'current';
+        tr.style.setProperty('--row', l.color);
+      }
+      tr.innerHTML = `<td><span class="dot" style="background:${l.color}"></span>${l.band} ${l.label}</td><td>${l.range}</td><td>${NEA_ACTION[l.id]}</td>`;
+      return tr;
+    }),
+  );
+}
+
 function spark(series) {
   const el = $('spark');
   if (series.length < 2) return (el.innerHTML = '');
@@ -54,7 +68,8 @@ function render(r) {
   const v = $('verdict');
   v.classList.remove('error');
   v.style.background = ev.level.color;
-  $('verdict-label').textContent = `${ev.level.label} air quality`;
+  v.style.color = ev.level.id === 1 ? '#1c1f24' : '#fff';
+  $('verdict-label').textContent = `${ev.level.label} (Band ${ev.level.band})`;
   $('verdict-note').textContent = ev.note || '';
   $('pm25').textContent = r.pm25;
   $('pm25-band').textContent = ev.pm25Band.label;
@@ -66,7 +81,10 @@ function render(r) {
   $('psi-sub').textContent = [s.pm25_24h != null && `PM2.5 sub-index ${s.pm25_24h}`, s.o3 != null && `O₃ sub-index ${s.o3}`]
     .filter(Boolean)
     .join(' · ');
-  $('adv-outdoor').textContent = r.advice.outdoor;
+  $('adv-action').textContent = r.advice.action;
+  $('adv-outdoor').textContent = r.advice.outdoor.slice(r.advice.action.length).trim();
+  $('adv-risk').textContent = r.advice.higherRisk || '';
+  renderGuide(ev.level.id);
   $('adv-purifier').textContent = r.advice.purifier;
   $('adv-aircon').textContent = r.advice.aircon;
   $('updated').textContent = `PM2.5 reading ${r.pm25At || '?'} · checked ${new Date().toLocaleTimeString()}`;
