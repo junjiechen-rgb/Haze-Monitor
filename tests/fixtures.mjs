@@ -33,3 +33,22 @@ export const psi = (v) => ({
     ],
   },
 });
+
+// Typical day: clean early morning and evening, dirty early afternoon.
+export const pattern = (h) => (h >= 6 && h < 9 ? 8 : h >= 19 && h < 22 ? 10 : h >= 13 && h < 17 ? 40 : 20);
+
+// API-shaped day of hourly items for `date` (SGT), hours [0, upTo).
+export const pm25Day = (date, valueAt = pattern, upTo = 24) => ({
+  code: 0,
+  data: {
+    regionMetadata: [],
+    items: Array.from({ length: upTo }, (_, h) => ({
+      date,
+      timestamp: `${date}T${String(h).padStart(2, '0')}:00:00+08:00`,
+      readings: { pm25_one_hourly: { west: 1, east: 1, central: 1, south: valueAt(h), north: 1 } },
+    })),
+  },
+});
+
+export const readingsDays = (dates, valueAt = pattern) =>
+  dates.flatMap((date) => Array.from({ length: 24 }, (_, hour) => ({ date, hour, value: valueAt(hour) })));

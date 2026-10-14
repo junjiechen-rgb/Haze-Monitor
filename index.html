@@ -34,6 +34,22 @@
       </article>
     </section>
 
+    <section id="history" class="stack" hidden>
+      <article class="card">
+        <h2>Hourly PM2.5 <span class="muted">last 24 hours</span></h2>
+        <svg id="hourly" class="hourly" viewBox="0 0 320 140" role="img" aria-label="Hourly PM2.5, last 24 hours"></svg>
+        <p id="hourly-pick" class="small"></p>
+        <p id="hourly-summary" class="small muted"></p>
+        <p class="small muted legend"><span class="key bar"></span> reading <span class="key typ"></span> usual for that hour (last <span id="hist-days">7</span> days)</p>
+      </article>
+      <article class="card">
+        <h2>Best time to go outside</h2>
+        <div id="windows" class="chips"></div>
+        <div id="strip" class="strip" aria-label="Hour by hour outlook"></div>
+        <p id="windows-note" class="small muted"></p>
+      </article>
+    </section>
+
     <section class="grid advice">
       <article class="card"><h2>Outdoor activity</h2><p id="adv-outdoor"></p></article>
       <article class="card"><h2>Air purifier</h2><p id="adv-purifier"></p></article>

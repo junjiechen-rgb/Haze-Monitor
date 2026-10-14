@@ -13,7 +13,7 @@ jobs:
     environment: github-pages
     steps:
       - uses: actions/checkout@v4
-      - run: mkdir _site && cp -r index.html style.css app.js lib _site/ && rm -f _site/lib/lark.js
+      - run: mkdir _site && cp -r index.html style.css app.js history-view.js lib _site/ && rm -f _site/lib/lark.js
       - uses: actions/upload-pages-artifact@v3
         with: { path: _site }
       - uses: actions/deploy-pages@v4

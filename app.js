@@ -1,5 +1,6 @@
 import { geocodePostal } from './lib/geo.js';
-import { loadReport } from './lib/data.js';
+import { loadHistory, loadReport } from './lib/data.js';
+import { renderHistory } from './history-view.js';
 import { DISCLAIMER } from './lib/advice.js';
 
 const REFRESH_MS = 10 * 60 * 1000;
@@ -75,7 +76,11 @@ function render(r) {
 async function refresh() {
   if (!postal) return;
   try {
-    render(await loadReport(await resolveHome()));
+    const report = await loadReport(await resolveHome());
+    render(report);
+    loadHistory(report.region, { cache: store })
+      .then((hist) => renderHistory(hist, report))
+      .catch(() => ($('history').hidden = true));
   } catch (e) {
     const v = $('verdict');
     v.classList.add('error');

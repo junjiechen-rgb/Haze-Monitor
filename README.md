@@ -7,6 +7,12 @@ Tracks Singapore's PSI and real-time PM2.5 for the NEA reading point nearest you
 - **Advice is driven by 1-hour PM2.5** (NEA's guide for the next few hours): Normal ≤55, Elevated 56–150, High 151–250, Very High ≥251 µg/m³. The 24-hour PSI is shown as context; if it is Unhealthy+ and worse than the PM2.5 band, advice goes one step more cautious, unless PM2.5 is clearly falling. A rising/falling trend vs the previous hour is shown.
 - General guidance only, not medical advice.
 
+## Hourly trend and best time to go outside
+- **Hourly PM2.5 chart:** the last 24 hourly readings for your nearest region, coloured by NEA band, with a marker for what is usual at each hour (median of the last 7 days). Tap a bar for details.
+- **Outdoor windows:** for the rest of today (6am–10pm) each hour gets an estimate = its usual value over the last 7 days, plus how far above/below usual PM2.5 is right now (that gap fades about 10% per hour, slowly on purpose, because haze persists). The cleanest third of hours within NEA Band I are "best"; contiguous runs of 2+ best hours are recommended. Hours above Band I are "avoid". During haze it says when to check again; late at night it shows tomorrow's usual best hours. Needs at least 3 days of history.
+- This is a pattern from recent days, not a forecast. Heat and UV are not scored.
+- Past days are cached in your browser; only today is refetched. The Lark daily summary and alerts include the best window.
+
 ## Dashboard
 Static page, no build step. Needs an HTTP server because it uses ES modules:
 
